@@ -145,10 +145,15 @@ MonoBehaviour:
     kind: 0
     color: {r: 1, g: 1, b: 1, a: 1}
     fallSpeed: 2.5
+    horizontalSpeed: 1.5
     pointsOnCatch: 10
     damageOnCatch: 0
     damageOnMiss: 10
     size: {x: 1, y: 1}
+  realSprite: {fileID: 4911411815639538119, guid: 30e830e0dd0a8090da05805c78457843, type: 3}
+  fakeSprite: {fileID: -774223946680424357, guid: 287b6e62bc5f4aa6a894aade4db1783e, type: 3}
+  goldSprite: {fileID: -7375714851627243478, guid: 18afec0fef3498dbc9ba0d209e94259d, type: 3}
+  bigSprite: {fileID: 5957501781665998092, guid: 0babfce54249ea9a68447ae2abd51f56, type: 3}
   catchSound: {fileID: 0}
   missSound: {fileID: 8300000, guid: e3ce8e98b104831f99c94d1b28af0bff, type: 3}
   soundVolume: 1

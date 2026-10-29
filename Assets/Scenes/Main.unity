@@ -153,7 +153,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 150, y: 100}
+  m_AnchoredPosition: {x: 170, y: 100}
   m_SizeDelta: {x: 280, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &118554860
@@ -1244,6 +1244,7 @@ MonoBehaviour:
     kind: 0
     color: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     fallSpeed: 2.5
+    horizontalSpeed: 1.5
     pointsOnCatch: 10
     damageOnCatch: 0
     damageOnMiss: 10
@@ -1252,6 +1253,7 @@ MonoBehaviour:
     kind: 1
     color: {r: 0, g: 1, b: 0, a: 1}
     fallSpeed: 2.5
+    horizontalSpeed: 1.5
     pointsOnCatch: -5
     damageOnCatch: 10
     damageOnMiss: 10
@@ -1260,6 +1262,7 @@ MonoBehaviour:
     kind: 2
     color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
     fallSpeed: 4
+    horizontalSpeed: 1.5
     pointsOnCatch: 50
     damageOnCatch: 0
     damageOnMiss: 0
@@ -1268,6 +1271,7 @@ MonoBehaviour:
     kind: 3
     color: {r: 0, g: 0, b: 0, a: 1}
     fallSpeed: 1.2
+    horizontalSpeed: 1.5
     pointsOnCatch: 20
     damageOnCatch: 0
     damageOnMiss: 30
@@ -1616,8 +1620,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   maxSpeed: 12
-  minX: -8
-  maxX: 8
+  netBombSprite: {fileID: -4234674787352258063, guid: 1de51c766b7eab20f9927ab28279f8bb, type: 3}
 --- !u!61 &1867522451
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1656,7 +1659,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 0.67, y: 0.42}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -1690,7 +1693,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 11d89c40dc2bfe94ba15eca0042762b9, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1713,7 +1716,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: -4234674787352258063, guid: 1de51c766b7eab20f9927ab28279f8bb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1799,7 +1802,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -150, y: -50}
+  m_AnchoredPosition: {x: -170, y: -50}
   m_SizeDelta: {x: 280, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2043217543
