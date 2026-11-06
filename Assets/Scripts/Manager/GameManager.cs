@@ -5,88 +5,50 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("Spawnen")]
-    public GameObject bombPrefab;
-    public float spawnInterval = 0.8f;
-    public float spawnXMin = -7f;
-    public float spawnXMax = 7f;
-    public float spawnY = 7f;
-    public float bottomY = -6f;
-
-    [Header("Bom-verdeling (gewichten)")]
-    public int realWeight = 60;
-    public int fakeWeight = 25;
-    public int goldWeight = 10;
-    public int bigWeight = 5;
-
-    [Header("Stats per type")]
-    public BombStats realStats = new BombStats { kind = BombKind.Real, color = new Color(0.2f,0.2f,0.2f), fallSpeed = 2.5f, pointsOnCatch = 10, damageOnMiss = 10 };
-    public BombStats fakeStats = new BombStats { kind = BombKind.Fake, color = Color.green,     fallSpeed = 2.5f, pointsOnCatch = -5, damageOnCatch = 10 };
-    public BombStats goldStats = new BombStats { kind = BombKind.Gold, color = Color.yellow,    fallSpeed = 4f,   pointsOnCatch = 50, damageOnMiss = 0 };
-    public BombStats bigStats  = new BombStats { kind = BombKind.Big,  color = Color.black,     fallSpeed = 1.2f, pointsOnCatch = 20, damageOnMiss = 30, size = new Vector2(1.8f,1.8f) };
+    private const string DefaultMainMenuScene = "MainMenu";
 
     [Header("Spel-status")]
-    public int score = 0;
-    public int damage = 0;
-    public int maxDamage = 100;
+    [SerializeField] private int score = 0;
+    [SerializeField] private int damage = 0;
+    [SerializeField] private int maxDamage = 100;
 
     [Header("UI")]
-    public TextMeshProUGUI scoreText;
-    public TextMeshProUGUI damageText;
-    public Image damageBarFill;
-    public Image flashOverlay;
-    public GameObject gameOverPanel;
+    [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TextMeshProUGUI damageText;
+    [SerializeField] private Image damageBarFill;
+    [SerializeField] private Image flashOverlay;
+    [SerializeField] private GameObject gameOverPanel;
 
     [Header("Camera Shake")]
-    public CameraShake cameraShake;
+    [SerializeField] private CameraShake cameraShake;
 
-    private float timer;
+    [Header("Scene-overgangen")]
+    [SerializeField] private string mainMenuScene;
+
+    [SerializeField] private BombSpawner bombSpawner;
     private bool gameOver = false;
 
-    void Start()
+    private void Start()
     {
+        // Het game-overpanel is pas zichtbaar nadat de speler verloren heeft.
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
         UpdateUI();
     }
 
-    void Update()
+    private void Update()
     {
         if (gameOver) return;
 
-        timer -= Time.deltaTime;
-        if (timer <= 0f)
+        if (bombSpawner != null)
         {
-            SpawnBomb();
-            timer = spawnInterval;
+            bombSpawner.Tick(this, Time.deltaTime);
         }
-    }
-
-    void SpawnBomb()
-    {
-        if (bombPrefab == null) return;
-
-        float x = Random.Range(spawnXMin, spawnXMax);
-        var go = Instantiate(bombPrefab, new Vector3(x, spawnY, 0f), Quaternion.identity);
-        var bomb = go.GetComponent<Bomb>();
-        bomb.Init(PickRandomStats(), this, bottomY);
-    }
-
-    BombStats PickRandomStats()
-    {
-        int total = realWeight + fakeWeight + goldWeight + bigWeight;
-        int r = Random.Range(0, total);
-
-        if (r < realWeight) return realStats;
-        r -= realWeight;
-        if (r < fakeWeight) return fakeStats;
-        r -= fakeWeight;
-        if (r < goldWeight) return goldStats;
-        return bigStats;
     }
 
     public void OnBombCaught(Bomb bomb)
     {
-        var s = bomb.stats;
+        // Een gevangen bom gebruikt de puntenwaarde van zijn eigen type.
+        var s = bomb.Stats;
         AddScore(s.pointsOnCatch);
 
         if (s.kind == BombKind.Fake)
@@ -102,7 +64,8 @@ public class GameManager : MonoBehaviour
 
     public void OnBombMissed(Bomb bomb)
     {
-        var s = bomb.stats;
+        // Een gemiste bom kan naast puntenverlies ook schade veroorzaken.
+        var s = bomb.Stats;
         AddScore(s.pointsOnMiss);
 
         if (s.kind == BombKind.Real || s.kind == BombKind.Big)
@@ -112,15 +75,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void AddScore(int amount)
+    private void AddScore(int amount)
     {
         score += amount;
+        // De score mag nooit negatief worden weergegeven.
         if (score < 0) score = 0;
         UpdateUI();
     }
 
-    void ApplyDamage(int amount)
+    private void ApplyDamage(int amount)
     {
+        // Clamp voorkomt dat de schade onder nul of boven de maximale waarde komt.
         damage = Mathf.Clamp(damage + amount, 0, maxDamage);
 
         if (cameraShake != null) cameraShake.Shake(0.15f, 0.25f);
@@ -129,20 +94,22 @@ public class GameManager : MonoBehaviour
         if (damage >= maxDamage) EndGame();
     }
 
-    void Flash(Color c)
+    private void Flash(Color c)
     {
         if (flashOverlay == null) return;
+        // Een korte kleurflits geeft visuele feedback bij een goede of slechte actie.
         c.a = 0.5f;
         flashOverlay.color = c;
         StartCoroutine(FadeFlash());
     }
 
-    System.Collections.IEnumerator FadeFlash()
+    private System.Collections.IEnumerator FadeFlash()
     {
         float t = 0.3f;
         float start = 0.3f;
         Color baseColor = flashOverlay.color;
 
+        // De alpha wordt geleidelijk afgebouwd zodat de flits niet abrupt verdwijnt.
         while (t > 0f)
         {
             t -= Time.deltaTime;
@@ -157,14 +124,15 @@ public class GameManager : MonoBehaviour
         flashOverlay.color = clear;
     }
 
-    void UpdateUI()
+    private void UpdateUI()
     {
+        // Alle HUD-elementen worden vanuit dezelfde methode bijgewerkt.
         if (scoreText) scoreText.text = "Score: " + score;
         if (damageText) damageText.text = "Damage: " + damage + "%";
         if (damageBarFill) damageBarFill.fillAmount = (float)damage / maxDamage;
     }
 
-       void EndGame()
+    private void EndGame()
     {
         gameOver = true;
         if (gameOverPanel != null)
@@ -173,7 +141,7 @@ public class GameManager : MonoBehaviour
             ShowFinalScore();
         }
 
-        // Zet de tijd in het spel stil (alles bevriest)
+        // Bevries de gameplay, maar laat de UI-knoppen bruikbaar.
         Time.timeScale = 0f; 
     }
 
@@ -181,6 +149,7 @@ public class GameManager : MonoBehaviour
     {
         if (scoreText == null || gameOverPanel == null) return;
 
+        // De bestaande scoretekst wordt naar het game-overpanel verplaatst.
         RectTransform scoreRect = scoreText.rectTransform;
         scoreText.transform.SetParent(gameOverPanel.transform, false);
         scoreRect.anchorMin = new Vector2(0.5f, 0.5f);
@@ -194,7 +163,11 @@ public class GameManager : MonoBehaviour
 
     public void ReturnToMainMenu()
     {
+        // Time.timeScale moet worden hersteld voordat de volgende scene start.
         Time.timeScale = 1f;
-        SceneManager.LoadScene("MainMenu");
+        string sceneToLoad = string.IsNullOrWhiteSpace(mainMenuScene)
+            ? DefaultMainMenuScene
+            : mainMenuScene;
+        SceneManager.LoadScene(sceneToLoad);
     }
 }

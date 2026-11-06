@@ -2,22 +2,24 @@ using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(CircleCollider2D))]
+[RequireComponent(typeof(Rigidbody2D))]
 public class Bomb : MonoBehaviour
 {
-    public BombStats stats;
+    private BombStats stats;
+    public BombStats Stats => stats;
 
     [Header("Sprites per bomtype")]
-    public Sprite realSprite;
-    public Sprite fakeSprite;
-    public Sprite goldSprite;
-    public Sprite bigSprite;
-    public float rotationZ = -90f;
+    [SerializeField] private Sprite realSprite;
+    [SerializeField] private Sprite fakeSprite;
+    [SerializeField] private Sprite goldSprite;
+    [SerializeField] private Sprite bigSprite;
+    [SerializeField] private float rotationZ = -90f;
 
     [Header("Geluid")]
-    public AudioClip catchSound;
-    public AudioClip missSound;
+    [SerializeField] private AudioClip catchSound;
+    [SerializeField] private AudioClip missSound;
     [Range(0f, 1f)]
-    public float soundVolume = 1f;
+    [SerializeField] private float soundVolume = 1f;
 
     private GameManager gm;
     private float bottomY;
@@ -26,6 +28,7 @@ public class Bomb : MonoBehaviour
 
     public void Init(BombStats stats, GameManager manager, float bottomY)
     {
+        // De GameManager geeft iedere instantie zijn type, regels en verwijzing terug.
         this.stats = stats;
         this.gm = manager;
         this.bottomY = bottomY;
@@ -40,8 +43,9 @@ public class Bomb : MonoBehaviour
     private void ApplyVisuals()
     {
         Sprite selectedSprite = null;
-        Color fallbackColor = Color.white;
+        Color fallbackColor = stats.color;
 
+        // Het type bepaalt welke sprite en fallbackkleur deze bom gebruikt.
         switch (stats.kind)
         {
             case BombKind.Real:
@@ -73,8 +77,9 @@ public class Bomb : MonoBehaviour
         }
     }
 
-    void Update()
+    private void Update()
     {
+        // Horizontale en verticale beweging worden gecombineerd tot een vaste valrichting.
         Vector3 movement = new Vector3(
             horizontalDirection * stats.horizontalSpeed,
             -stats.fallSpeed,
@@ -84,6 +89,7 @@ public class Bomb : MonoBehaviour
 
         if (transform.position.y < bottomY)
         {
+            // Een bom die onder het speelveld komt telt als gemist en wordt verwijderd.
             if (stats != null && stats.kind != BombKind.Fake)
             {
                 PlaySound(missSound);
@@ -99,6 +105,7 @@ public class Bomb : MonoBehaviour
         Camera mainCamera = Camera.main;
         if (mainCamera == null) return;
 
+        // De bom keert om zodra de rand van de camera wordt geraakt.
         float cameraDepth = Mathf.Abs(transform.position.z - mainCamera.transform.position.z);
         float leftEdge = mainCamera.ViewportToWorldPoint(new Vector3(0f, 0f, cameraDepth)).x;
         float rightEdge = mainCamera.ViewportToWorldPoint(new Vector3(1f, 0f, cameraDepth)).x;
@@ -119,23 +126,22 @@ public class Bomb : MonoBehaviour
         transform.position = position;
     }
 
-       void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        // Check of we de speler raken
+        // Alleen een botsing met de speler telt als een gevangen bom.
         if (other.CompareTag("Player"))
         {
             PlaySound(catchSound);
 
-            // Vertel de GameManager dat we gevangen zijn
+            // De GameManager verwerkt score en eventuele schade.
             if (gm != null) gm.OnBombCaught(this);
-            
-            // Vernietig de bom (hij verdwijnt dus!)
             Destroy(gameObject);
         }
     }
 
     private void PlaySound(AudioClip clip)
     {
+        // AudioClip is optioneel; zonder clip blijft de gameplay gewoon werken.
         if (clip != null)
         {
             AudioSource.PlayClipAtPoint(clip, transform.position, soundVolume);

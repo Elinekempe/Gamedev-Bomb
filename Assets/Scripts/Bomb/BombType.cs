@@ -1,17 +1,19 @@
 using UnityEngine;
 
+// Elk type heeft eigen regels voor snelheid, score, schade en uiterlijk.
 public enum BombKind { Real, Fake, Gold, Big }
 
 [System.Serializable]
 public class BombStats
 {
+    // Deze data wordt per type in de GameManager ingesteld via de Inspector.
     public BombKind kind;
-    public Color color = Color.white;
-    public float fallSpeed = 2.5f;
-    public float horizontalSpeed = 1.5f;
-    public int pointsOnCatch = 10;
+    public Color color;
+    public float fallSpeed;
+    public float horizontalSpeed;
+    public int pointsOnCatch;
     public int pointsOnMiss;
-    public int damageOnCatch = 0;
-    public int damageOnMiss = 10;
-    public Vector2 size = Vector2.one;
+    public int damageOnCatch;
+    public int damageOnMiss;
+    public Vector2 size;
 }

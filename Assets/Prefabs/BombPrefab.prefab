@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4988063780948614930}
   - component: {fileID: 7049852440289429274}
   - component: {fileID: 6496075004784779797}
+  - component: {fileID: 2080000010}
   m_Layer: 0
   m_Name: BombPrefab
   m_TagString: Untagged
@@ -141,16 +142,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29e9cf470b8a32778847349f1e241fbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bomb
-  stats:
-    kind: 0
-    color: {r: 1, g: 1, b: 1, a: 1}
-    fallSpeed: 2.5
-    horizontalSpeed: 1.5
-    pointsOnCatch: 10
-    pointsOnMiss: -5
-    damageOnCatch: 0
-    damageOnMiss: 10
-    size: {x: 1, y: 1}
   realSprite: {fileID: 4911411815639538119, guid: 30e830e0dd0a8090da05805c78457843, type: 3}
   fakeSprite: {fileID: -774223946680424357, guid: 287b6e62bc5f4aa6a894aade4db1783e, type: 3}
   goldSprite: {fileID: -7375714851627243478, guid: 18afec0fef3498dbc9ba0d209e94259d, type: 3}
@@ -158,3 +149,31 @@ MonoBehaviour:
   catchSound: {fileID: 8300000, guid: e3ce8e98b104831f99c94d1b28af0bff, type: 3}
   missSound: {fileID: 8300000, guid: e3ce8e98b104831f99c94d1b28af0bff, type: 3}
   soundVolume: 1
+--- !u!50 &2080000010
+Rigidbody2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_GameObject: {fileID: 9110371172476668200}
+  serializedVersion: 5
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_UseContactForce: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+  m_SleepMode: 1
+  m_Interpolate: 0
+  m_UseChildCollider: 0
