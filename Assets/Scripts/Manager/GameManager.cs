@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,7 +21,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Stats per type")]
     public BombStats realStats = new BombStats { kind = BombKind.Real, color = new Color(0.2f,0.2f,0.2f), fallSpeed = 2.5f, pointsOnCatch = 10, damageOnMiss = 10 };
-    public BombStats fakeStats = new BombStats { kind = BombKind.Fake, color = Color.green,     fallSpeed = 2.5f, damageOnCatch = 10, pointsOnCatch = -5 };
+    public BombStats fakeStats = new BombStats { kind = BombKind.Fake, color = Color.green,     fallSpeed = 2.5f, pointsOnCatch = -5, damageOnCatch = 10 };
     public BombStats goldStats = new BombStats { kind = BombKind.Gold, color = Color.yellow,    fallSpeed = 4f,   pointsOnCatch = 50, damageOnMiss = 0 };
     public BombStats bigStats  = new BombStats { kind = BombKind.Big,  color = Color.black,     fallSpeed = 1.2f, pointsOnCatch = 20, damageOnMiss = 30, size = new Vector2(1.8f,1.8f) };
 
@@ -102,15 +103,12 @@ public class GameManager : MonoBehaviour
     public void OnBombMissed(Bomb bomb)
     {
         var s = bomb.stats;
+        AddScore(s.pointsOnMiss);
 
         if (s.kind == BombKind.Real || s.kind == BombKind.Big)
         {
             ApplyDamage(s.damageOnMiss);
             Flash(Color.red);
-        }
-        else if (s.kind == BombKind.Fake)
-        {
-            AddScore(5);
         }
     }
 
@@ -169,9 +167,34 @@ public class GameManager : MonoBehaviour
        void EndGame()
     {
         gameOver = true;
-        if (gameOverPanel != null) gameOverPanel.SetActive(true);
-        
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+            ShowFinalScore();
+        }
+
         // Zet de tijd in het spel stil (alles bevriest)
         Time.timeScale = 0f; 
+    }
+
+    private void ShowFinalScore()
+    {
+        if (scoreText == null || gameOverPanel == null) return;
+
+        RectTransform scoreRect = scoreText.rectTransform;
+        scoreText.transform.SetParent(gameOverPanel.transform, false);
+        scoreRect.anchorMin = new Vector2(0.5f, 0.5f);
+        scoreRect.anchorMax = new Vector2(0.5f, 0.5f);
+        scoreRect.anchoredPosition = new Vector2(0f, 140f);
+        scoreRect.sizeDelta = new Vector2(420f, 70f);
+        scoreText.alignment = TextAlignmentOptions.Center;
+        scoreText.text = "EIND SCORE: " + score;
+        scoreText.transform.SetAsLastSibling();
+    }
+
+    public void ReturnToMainMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu");
     }
 }

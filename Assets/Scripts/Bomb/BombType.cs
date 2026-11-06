@@ -10,6 +10,7 @@ public class BombStats
     public float fallSpeed = 2.5f;
     public float horizontalSpeed = 1.5f;
     public int pointsOnCatch = 10;
+    public int pointsOnMiss;
     public int damageOnCatch = 0;
     public int damageOnMiss = 10;
     public Vector2 size = Vector2.one;

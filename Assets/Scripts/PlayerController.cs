@@ -4,16 +4,19 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float maxSpeed = 12f;
+    public float verticalMovementRange = 1.5f;
     public Sprite netBombSprite;
     private Camera mainCamera;
     private Renderer playerRenderer;
     private SpriteRenderer playerSpriteRenderer;
+    private float startingY;
 
     void Awake()
     {
         mainCamera = Camera.main;
         playerRenderer = GetComponent<Renderer>();
         playerSpriteRenderer = GetComponent<SpriteRenderer>();
+        startingY = transform.position.y;
         SetSpriteMaterial();
 
         if (netBombSprite != null)
@@ -48,7 +51,7 @@ public class PlayerController : MonoBehaviour
 
         Vector3 target = new Vector3(
             Mathf.Clamp(mouse.x, leftEdge + halfWidth, rightEdge - halfWidth),
-            transform.position.y,
+            Mathf.Clamp(mouse.y, startingY, startingY + verticalMovementRange),
             0f);
 
         transform.position = Vector3.MoveTowards(
